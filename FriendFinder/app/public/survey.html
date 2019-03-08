@@ -47,7 +47,8 @@
                 <div class="form-group mb-4">
                     <h3>Question 1</h3>
                     <label for="exampleFormControlSelect1">You find sports to be boring.</label>
-                    <select class="form-control" id="exampleFormControlSelect1">
+                    <select class="form-control" id="question1">
+                        <option selected>Select an Option</option>
                         <option>1 (Strongly Disagree)</option>
                         <option>2</option>
                         <option>3</option>
@@ -59,7 +60,8 @@
                 <div class="form-group mb-4">
                     <h3>Question 2</h3>
                     <label for="exampleFormControlSelect1">You'd rather stay home than go to a party.</label>
-                    <select class="form-control" id="exampleFormControlSelect1">
+                    <select class="form-control" id="question2">
+                        <option selected>Select an Option</option>
                         <option>1 (Strongly Disagree)</option>
                         <option>2</option>
                         <option>3</option>
@@ -71,7 +73,8 @@
                 <div class="form-group mb-4">
                     <h3>Question 3</h3>
                     <label for="exampleFormControlSelect1">You value honesty even if it can be harsh.</label>
-                    <select class="form-control" id="exampleFormControlSelect1">
+                    <select class="form-control" id="question3">
+                        <option selected>Select an Option</option>
                         <option>1 (Strongly Disagree)</option>
                         <option>2</option>
                         <option>3</option>
@@ -83,7 +86,8 @@
                 <div class="form-group mb-4">
                     <h3>Question 4</h3>
                     <label for="exampleFormControlSelect1">You like cats more than dogs.</label>
-                    <select class="form-control" id="exampleFormControlSelect1">
+                    <select class="form-control" id="question4">
+                        <option selected>Select an Option</option>
                         <option>1 (Strongly Disagree)</option>
                         <option>2</option>
                         <option>3</option>
@@ -95,7 +99,8 @@
                 <div class="form-group mb-4">
                     <h3>Question 5</h3>
                     <label for="exampleFormControlSelect1">You have an active imagination.</label>
-                    <select class="form-control" id="exampleFormControlSelect1">
+                    <select class="form-control" id="question5">
+                        <option selected>Select an Option</option>
                         <option>1 (Strongly Disagree)</option>
                         <option>2</option>
                         <option>3</option>
@@ -107,7 +112,8 @@
                 <div class="form-group mb-4">
                     <h3>Question 6</h3>
                     <label for="exampleFormControlSelect1">You are an introvert.</label>
-                    <select class="form-control" id="exampleFormControlSelect1">
+                    <select class="form-control" id="question6">
+                        <option selected>Select an Option</option>
                         <option>1 (Strongly Disagree)</option>
                         <option>2</option>
                         <option>3</option>
@@ -119,7 +125,8 @@
                 <div class="form-group mb-4">
                     <h3>Question 7</h3>
                     <label for="exampleFormControlSelect1">You hate greasy food.</label>
-                    <select class="form-control" id="exampleFormControlSelect1">
+                    <select class="form-control" id="question7">
+                        <option selected>Select an Option</option>
                         <option>1 (Strongly Disagree)</option>
                         <option>2</option>
                         <option>3</option>
@@ -131,7 +138,8 @@
                 <div class="form-group mb-4">
                     <h3>Question 8</h3>
                     <label for="exampleFormControlSelect1">You spend a lot of time playing video games.</label>
-                    <select class="form-control" id="exampleFormControlSelect1">
+                    <select class="form-control" id="question8">
+                        <option selected>Select an Option</option>
                         <option>1 (Strongly Disagree)</option>
                         <option>2</option>
                         <option>3</option>
@@ -143,7 +151,8 @@
                 <div class="form-group mb-4">
                     <h3>Question 9</h3>
                     <label for="exampleFormControlSelect1">You love to travel.</label>
-                    <select class="form-control" id="exampleFormControlSelect1">
+                    <select class="form-control" id="question9">
+                        <option selected>Select an Option</option>
                         <option>1 (Strongly Disagree)</option>
                         <option>2</option>
                         <option>3</option>
@@ -155,7 +164,8 @@
                 <div class="form-group mb-4">
                     <h3>Question 10</h3>
                     <label for="exampleFormControlSelect1">Caffeine is life.</label>
-                    <select class="form-control" id="exampleFormControlSelect1">
+                    <select class="form-control" id="question10">
+                        <option selected>Select an Option</option>
                         <option>1 (Strongly Disagree)</option>
                         <option>2</option>
                         <option>3</option>
@@ -196,6 +206,42 @@
 
     <!-- My javascript for this page -->
     <script type="text/javascript">
+
+        $("#submitSurvey").on("click", function (event) {
+            event.preventDefault();
+
+            // Initializing the newFriend object structure.
+            var newFriend = {
+                name: "",
+                photo: "",
+                score: []
+            };
+
+            // Passing form data values into the object.
+            newFriend.name = $("#userName").val().trim();
+            newFriend.photo = $("#userImageLink").val().trim();
+
+            for (i = 0; i < 10; i++) {
+                newFriend.score.push($("#question" + (i + 1)).val());
+
+                newFriend.score[i] = parseInt(newFriend.score[i]);
+            }
+
+            // Resett input fields back to default.
+            $("#userName").val('');
+            $("#userImageLink").val('');
+
+            for (i = 0; i < 10; i++) {
+                $("#question" + (i + 1)).val('Select an Option');
+            }
+
+            // Post request
+            $.post("/api/friends", newFriend)
+                .then(function (data) {
+                    console.log(data);
+                });
+
+        });
 
     </script>
 </body>
