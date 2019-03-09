@@ -13,6 +13,28 @@
 </head>
 
 <body>
+
+    <!-- Modal -->
+    <div class="modal fade" id="best-match" tabindex="-1" role="dialog" aria-labelledby="best-match-name"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Best Match</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <!-- Best match name and picture -->
+                <div class="modal-body" id="best-match-info"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Start of survey -->
     <div class="container">
         <div class="row">
             <div class="col-12 mt-3">
@@ -185,16 +207,14 @@
     </div>
     <!-- Container end -->
     </div>
-
     <!-- Links to the friends JSON page and github -->
     <div class="container my-5">
         <div class="row">
             <div class="col">
-                <a href="/api/friendslist">API Friends List</a> | <a href="#">Github Repo</a>
+                <a href="/api/friends">API Friends List</a> | <a href="https://github.com/August-Johnson/friend-finder">Github Repo</a>
             </div>
         </div>
     </div>
-
     <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
@@ -209,7 +229,6 @@
 
         $("#submitSurvey").on("click", function (event) {
             event.preventDefault();
-
             // Initializing the newFriend object structure.
             var newFriend = {
                 name: "",
@@ -217,17 +236,31 @@
                 scores: []
             };
 
-            // Passing the data values from the survey form into the object.
+            // Checking if the user entered a name.
+            if ($("#userName").val() === "") {
+                return alert("PLEASE ENTER A NAME");
+            }
+            // Checking if the user entered an image link.
+            else if ($("#userImageLink").val() === "") {
+                return alert("PLEASE ENTER AN IMAGE LINK");
+            }
+            // If the user entered both, pass the name and image link data values from the survey into the object.
             newFriend.name = $("#userName").val().trim();
             newFriend.photo = $("#userImageLink").val().trim();
 
+            // Looping through the questions and checking if they have all been answered.
             for (i = 0; i < 10; i++) {
+                // If a question has not been answered (still default value), alert the user and do not make the post request.
+                if ($("#question" + (i + 1)).val() === "Select an Option") {
+                    return alert("YOU HAVEN'T ANSWERED EVERY QUESTION");
+                }
+                // Pushing the questions 'scores' / 'answers' into the array inside the newFriend object.
                 newFriend.scores.push($("#question" + (i + 1)).val());
-
+                // Converting them into numbers. (Also clips off the 'Strongly Disagree' and 'Strongly Agree' from 1 and 5.)
                 newFriend.scores[i] = parseInt(newFriend.scores[i]);
             }
 
-            // Reset the input fields back to default.
+            // Reset the input fields back to thier defaults.
             $("#userName").val('');
             $("#userImageLink").val('');
 
@@ -235,13 +268,24 @@
                 $("#question" + (i + 1)).val('Select an Option');
             }
 
-            // Post request
-            $.post("/api/friends", newFriend)
-                .then(function (data) {
-                    console.log(data);
-                });
-        });
+            // Post request with the completed newFriend object. 
+            // The data callback is either the bestMatch object from the apiRoutes.js, or it comes back as an empty string if there is no match.
+            $.post("/api/friends", newFriend, function (data) {
+                if (data === "") {
+                    // If there is no match, tell the user so.
+                    $("#best-match-info").html("SORRY, NO MATCHES FOUND!");
+                    $("#best-match").modal();
+                }
+                else {
+                    // Display the name and photo of the best matched friend.
+                    $("#best-match-info").html('<h3>' + data.name + '</h3>' +
+                    '<br />' + 
+                    '<img src="' + data.photo + '">');
+                    $("#best-match").modal();
+                }
+            });
 
+        });
     </script>
 </body>
 
