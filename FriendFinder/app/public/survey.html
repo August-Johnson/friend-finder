@@ -214,20 +214,20 @@
             var newFriend = {
                 name: "",
                 photo: "",
-                score: []
+                scores: []
             };
 
-            // Passing form data values into the object.
+            // Passing the data values from the survey form into the object.
             newFriend.name = $("#userName").val().trim();
             newFriend.photo = $("#userImageLink").val().trim();
 
             for (i = 0; i < 10; i++) {
-                newFriend.score.push($("#question" + (i + 1)).val());
+                newFriend.scores.push($("#question" + (i + 1)).val());
 
-                newFriend.score[i] = parseInt(newFriend.score[i]);
+                newFriend.scores[i] = parseInt(newFriend.scores[i]);
             }
 
-            // Resett input fields back to default.
+            // Reset the input fields back to default.
             $("#userName").val('');
             $("#userImageLink").val('');
 
@@ -240,7 +240,6 @@
                 .then(function (data) {
                     console.log(data);
                 });
-
         });
 
     </script>
