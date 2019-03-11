@@ -52,7 +52,7 @@
 
                     <div class="form-group mt-3">
                         <label for="userName">Name (Required)</label>
-                        <input type="text" class="form-control" id="userName" aria-describedby="nameInput">
+                        <input type="text" class="form-control required" id="userName" aria-describedby="nameInput">
                     </div>
 
                     <div class="form-group my-4">
@@ -211,7 +211,8 @@
     <div class="container my-5">
         <div class="row">
             <div class="col">
-                <a href="/api/friends">API Friends List</a> | <a href="https://github.com/August-Johnson/friend-finder">Github Repo</a>
+                <a href="/api/friends">API Friends List</a> | <a
+                    href="https://github.com/August-Johnson/friend-finder">Github Repo</a>
             </div>
         </div>
     </div>
@@ -236,12 +237,15 @@
                 scores: []
             };
 
-            // Checking if the user entered a name.
+
+            // Checking if the user entered a name. If not, jump to the name input field.
             if ($("#userName").val() === "") {
+                $("#userName").focus();
                 return alert("PLEASE ENTER A NAME");
             }
-            // Checking if the user entered an image link.
+            // Checking if the user entered an image link. If not, jump to the image link input field.
             else if ($("#userImageLink").val() === "") {
+                $("#userImageLink").focus();
                 return alert("PLEASE ENTER AN IMAGE LINK");
             }
             // If the user entered both, pass the name and image link data values from the survey into the object.
@@ -250,9 +254,11 @@
 
             // Looping through the questions and checking if they have all been answered.
             for (i = 0; i < 10; i++) {
-                // If a question has not been answered (still default value), alert the user and do not make the post request.
+                // If a question has not been answered (still default value), alert the user and do not make the post request. 
+                // Also jump to the first question field that was not answered.
                 if ($("#question" + (i + 1)).val() === "Select an Option") {
-                    return alert("YOU HAVEN'T ANSWERED EVERY QUESTION");
+                    $("#question" + (i + 1)).focus();
+                    return alert("YOU HAVE NOT ANSWERED QUESTION " + (i + 1));
                 }
                 // Pushing the questions 'scores' / 'answers' into the array inside the newFriend object.
                 newFriend.scores.push($("#question" + (i + 1)).val());
@@ -272,15 +278,16 @@
             // The data callback is either the bestMatch object from the apiRoutes.js, or it comes back as an empty string if there is no match.
             $.post("/api/friends", newFriend, function (data) {
                 if (data === "") {
-                    // If there is no match, tell the user so.
+                    // If there is no match, tell the user so. Added feature to jump back to the top of the page.
                     $("#best-match-info").html("SORRY, NO MATCHES FOUND!");
                     $("#best-match").modal();
+                    $('html,body').scrollTop(0);
                 }
                 else {
                     // Display the name and photo of the best matched friend.
                     $("#best-match-info").html('<h3>' + data.name + '</h3>' +
-                    '<br />' + 
-                    '<img src="' + data.photo + '">');
+                        '<br />' +
+                        '<img src="' + data.photo + '" style="width: 100%; height: auto;">');
                     $("#best-match").modal();
                 }
             });
